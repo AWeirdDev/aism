@@ -29,7 +29,7 @@ You can also check if it is sensitive (like swear words):
 instance.is_sensitive()
 ```
 
-Those are just basic ones. What's more, you can tell it to fill a dict!
+Those are just the basic ones. What's more, you can tell it to fill a dict!
 
 ```python
 instance.fill_dict({
@@ -41,4 +41,27 @@ instance.fill_dict({
 
 You get a nice formatted dict!
 
-<!-- ai for the runtime -->
+<details>
+<summary>Example</summary>
+
+```python
+{
+  "title": "Delicious Chocolate",
+  "tastes": "delicious and sweet",
+  "speaker": None
+}
+```
+  
+</details>
+
+***
+
+To sum it up, Aism is **AI for the runtime**. How? Watch.
+
+```python
+def add_comment(content: str):
+  if ra.give(content).is_sensitive():
+    raise ValueError("content must not be sensitive!")
+  fake_db.add_comment(content)
+```
+
