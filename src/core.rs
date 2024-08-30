@@ -133,10 +133,10 @@ impl RustInstance {
                 dict.set_item(
                     key,
                     match value {
-                        Value::String(s) => Some(s.to_string()),
-                        Value::Number(n) => Some(n.to_string()),
+                        Value::String(s) => Some(s.to_string().to_object(py)),
+                        Value::Number(n) => Some(n.to_string().to_object(py)),
                         Value::Null => None,
-                        _ => Some("".to_string()),
+                        _ => Some("".to_string().to_object(py)),
                     }
                 )?;
             }
