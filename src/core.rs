@@ -78,7 +78,7 @@ impl RustInstance {
         let f = async move {
             if self.debug {
                 println!(
-                    "→ {} instruct (q): {}",
+                    "→ {} instruct (q): {}\n",
                     "aism".bright_blue(),
                     format!("{:?}", q).dimmed()
                 );
