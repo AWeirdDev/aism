@@ -15,13 +15,6 @@ print(
     .give(
         "Welcome to Acme, where elegance meets innovation. Our chic, minimalist decor complements the artisanal dishes crafted with precision. The menu is a curated symphony of flavors—signature truffle risotto, delicate lobster bisque, and soufflés that float like clouds. From hand-poured coffees to decadent pastries, each bite and sip elevates your dining experience. At Acme, indulgence is an art."
     )
-    .fill_dict(
-        {
-            "title": "str, Best suiting title",
-            "summarization": "str",
-            "textures": "list[str]",
-            "place": "str",
-            "menu": "list[str]"
-        }
-    )
+    .give("IMPORTANT: Acme is closing in 2023-02-06 due to the high cost of rental. We're sorry for any inconvenience.")
+    .summarize()
 )
