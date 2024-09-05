@@ -3,6 +3,7 @@ use pyo3::prelude::*;
 mod core;
 mod provider_base;
 mod provider_groq;
+mod utils;
 
 use crate::core::{RustAism, RustInstance};
 
