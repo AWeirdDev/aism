@@ -43,6 +43,8 @@ jobs:
           python-version: 3.x
       - name: Install libssl
         run: sudo apt-get install libssl-dev
+      - name: Install pkg-config
+        run: sudo apt-get install pkg-config
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -76,6 +78,8 @@ jobs:
           python-version: 3.x
       - name: Install libssl
         run: sudo apt-get install libssl-dev
+      - name: Install pkg-config
+        run: sudo apt-get install pkg-config
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
