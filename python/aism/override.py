@@ -15,6 +15,7 @@ from .utils import (
     DescriptiveDict,
     dataclass_to_schema,
     descriptive_dict_to_schema,
+    dict_to_schema,
 )
 
 
@@ -56,6 +57,9 @@ class Aism:
         """
         return Instance(self.ra.feed(rows))
 
+    def __repr__(self) -> str:
+        return "Aism::<RustAism>()"
+
 
 T_DescriptiveDC = TypeVar("T_DescriptiveDC", bound=Dataclass)
 
@@ -70,6 +74,22 @@ class Instance:
 
     def __init__(self, ri: RustInstance):
         self.ri = ri
+
+    def give(self, data: str) -> "Instance":
+        """Adds data to the current instance.
+
+        Args:
+            data (str): The data to provide.
+        """
+        return Instance(self.ri.give(data))
+
+    def feed(self, rows: List[str]) -> "Instance":
+        """Adds rows of data to the current instance.
+
+        Args:
+            rows (List[str]): The rows of data to provide.
+        """
+        return Instance(self.ri.feed(rows))
 
     def instruct(self, instruction: str) -> str:
         """Instruct the LLM to complete the given instruction.
@@ -203,14 +223,11 @@ class Instance:
     ) -> Union[Dict[str, Any], Dataclass]:
         if is_dataclass(o):
             desc = dataclass_to_schema(o)
-            res = self.ri.fill_dict(
-                f"Schema name: {o.__name__!r}\n"
-                + (("Schema description: " + o.__doc__ + "\n") if o.__doc__ else "")
-                + desc
-                + "ONLY FILL THE FIELDS MENTIONED."
-            )
-            me = o(**res)
-            return me  # type: ignore
+            res = self.ri.fill_dict(desc + "\nProvide the best value for each key.")
+            if len(res.keys()) == 1 and list(res)[0] == o.__name__:
+                res = res[o.__name__]
+
+            return dict_to_schema(res, o)
 
         elif isinstance(o, dict):
             desc = descriptive_dict_to_schema(o)

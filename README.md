@@ -1,67 +1,63 @@
-# 🧪 aism (beta)
-Let AI join your codebase. Integrate with everything seamlessly.
+<div align="center">
 
-## Tutorial
-So, what really *is* Aism? You'll see it for yourself. First things first, we'll create a new client using `RustAism` for the simplest features.
+![banner](weird_banner.png)
 
-```python
-import aism
-ra = aism.RustAism(api_key="gsk_xxx")  # Groq API key
-```
+Aism is an AI framework powered by [Groq](https://groq.com).
 
-AI needs **data**. Therefore, you'll have to feed it through `give()` (as the name suggests, *give* it to the LLM).
+`$ pip install aism`
 
-```python
-instance = ra.give("Chocolate tastes delicious, and sweet!")
-```
+</div>
 
-This creates a new `RustInstance`, and your data is ready to be served (...to the LLM)!
+So... what is Aism?
 
-Take a simple task for example, we can translate it:
+Aism provides a clean interface for summarizing, translating, conditional checks (like keypoint matching, mentioned checking), data auto-filling, <s>reordering</s>, <s>organizing</s>, <s>procedural data processing</s>, <s>function calling</s>, and more.<sup>1</sup>
 
-```python
-instance.translate("german")
-```
+**TL;DR: Aism is AI for the runtime.**
 
-You can also check if it is sensitive (like swear words):
+<sub><sup>1</sup> Striked-through features are currently in development and will be shipped within the next few months.</sub>
 
-```python
-instance.is_sensitive()
-```
+## 3 steps
 
-Those are just the basic ones. What's more, you can tell it to fill a dict!
+Aism is as simple as these 3 steps:
+
+1. Get your Groq API key here: [console.groq.com](https://console.groq.com/keys)
+
+2. Create your first AI runtime using the `Aism()` class.
 
 ```python
-instance.fill_dict({
-  "title": "summarized title",
-  "tastes": "how it tastes",
-  "speaker": "who the speaker is"  # if unknown, gives None
-})
+from aism import Aism
+
+ai = Aism(
+  api_key="YOUR_GROQ_API_KEY"  # optional. defaults to environment variable "GROQ_API_KEY"
+)
 ```
 
-You get a nice formatted dict!
-
-<details>
-<summary>Example</summary>
+3. Give any kind of data to the AI and play around with it.
 
 ```python
-{
-  "title": "Delicious Chocolate",
-  "tastes": "delicious and sweet",
-  "speaker": None
-}
-```
-  
-</details>
+from dataclasses import dataclass
 
-***
+@dataclass
+class News:
+  title: str
+  excerpt: str
+  tags: list[str]
 
-To sum it up, Aism is **AI for the runtime**. How? Watch.
+news = """\
+A man in Springfield has reportedly trained his pet goldfish to understand basic calculus principles. While skeptics abound, the fish has allegedly aced every test.
+"""
 
-```python
-def add_comment(content: str):
-  if ra.give(content).is_sensitive():
-    raise ValueError("content must not be sensitive!")
-  fake_db.add_comment(content)
+print(ai.give(news).fill(News))
 ```
 
+We get a nice result like this:
+
+> 🐣 **Aism** <kbd>runtime</kbd>
+> 
+> ```python
+> News(title='A man in Springfield has reportedly trained his pet goldfish to understand basic calculus principles', summarization='While skeptics abound, the fish has allegedly aced every test', tags=['goldfish', 'calculus', 'Springfield'])
+> ```
+
+Awesome! Your data is **even more structured** and easier to understand through the typing system.
+
+But wait, there's MORE to Aism?!

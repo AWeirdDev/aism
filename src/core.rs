@@ -77,6 +77,11 @@ impl RustInstance {
         self.to_owned()
     }
 
+    fn feed(&mut self, values: Vec<String>) -> RustInstance {
+        self.values.extend(values);
+        self.to_owned()
+    }
+
     fn instruct(&self, py: Python, q: String) -> PyResult<String> {
         let f = async move {
             if self.debug {
@@ -182,11 +187,20 @@ impl RustInstance {
         let res = self.instruct(
             py,
             format!(
-                "Given the below dictionary, you MUST fill it with the above data:\n{:?}\nYOU MUST provide valid JSON, NOT PYTHON CODE. If unknown, use null.", 
+                "Given the below dictionary, you MUST fill it with the above data:\n{:?}\nYOU MUST provide valid JSON, NOT PYTHON CODE. Ensure the trailing }}.", 
                 d
             )
         )?;
-        let filled = serde_json::from_str::<Value>(res.as_str());
+
+        let rjson = repair_json::repair(res.to_owned());
+        if let Err(e) = rjson {
+            return Err(PyRuntimeError::new_err(format!(
+                "failed to fill dictionary, error:\n{}",
+                e
+            )));
+        }
+
+        let filled = serde_json::from_str::<Value>(rjson.unwrap().as_str());
         if let Ok(r) = filled {
             Ok(utils::to_py(py, r)?.unwrap_or(PyDict::new_bound(py).into()))
         } else {
