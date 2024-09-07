@@ -4,21 +4,18 @@ from typing import (
     Dict,
     List,
     Optional,
-    Protocol,
+    TypeVar,
     Union,
-    get_origin,
     overload,
 )
 
 from .aism import RustAism, RustInstance
-
-DescriptiveDict = Dict[str, Union[str, "DescriptiveDict", List["DescriptiveDict"]]]
-
-
-class Dataclass(Protocol):
-    """Dataclass protocol."""
-
-    __dataclass_fields__: Dict[str, Any]
+from .utils import (
+    Dataclass,
+    DescriptiveDict,
+    dataclass_to_schema,
+    descriptive_dict_to_schema,
+)
 
 
 class Aism:
@@ -58,6 +55,9 @@ class Aism:
             rows (List[str]): The rows of data to provide.
         """
         return Instance(self.ra.feed(rows))
+
+
+T_DescriptiveDC = TypeVar("T_DescriptiveDC", bound=Dataclass)
 
 
 class Instance:
@@ -155,7 +155,7 @@ class Instance:
         return self.summarize()
 
     @overload
-    def fill(self, o: Dataclass):
+    def fill(self, o: T_DescriptiveDC) -> T_DescriptiveDC:
         """Fill the instance data with the given dataclass.
 
         Example:
@@ -179,7 +179,7 @@ class Instance:
         """
 
     @overload
-    def fill(self, o: DescriptiveDict):
+    def fill(self, o: DescriptiveDict) -> Dict[str, Any]:
         """Fill the instance data with the given descriptive dictionary.
 
         Example:
@@ -198,5 +198,25 @@ class Instance:
             o (DescriptiveDict): The dictionary to fill with.
         """
 
-    def fill(self, o: Union[Dataclass, DescriptiveDict]):
-        print(is_dataclass(o))
+    def fill(
+        self, o: Union[Dataclass, DescriptiveDict]
+    ) -> Union[Dict[str, Any], Dataclass]:
+        if is_dataclass(o):
+            desc = dataclass_to_schema(o)
+            res = self.ri.fill_dict(
+                f"Schema name: {o.__name__!r}\n"
+                + (("Schema description: " + o.__doc__ + "\n") if o.__doc__ else "")
+                + desc
+                + "ONLY FILL THE FIELDS MENTIONED."
+            )
+            me = o(**res)
+            return me  # type: ignore
+
+        elif isinstance(o, dict):
+            desc = descriptive_dict_to_schema(o)
+            res = self.ri.fill_dict(desc)
+
+        else:
+            raise TypeError(f"Unrecognized type for instance.fill: {type(o)}")
+
+        return res

@@ -182,7 +182,7 @@ impl RustInstance {
         let res = self.instruct(
             py,
             format!(
-                "Given the below dictionary, you MUST fill it with the above data: {:?}\nYOU MUST provide valid JSON, NOT PYTHON CODE. If unknown, use null.", 
+                "Given the below dictionary, you MUST fill it with the above data:\n{:?}\nYOU MUST provide valid JSON, NOT PYTHON CODE. If unknown, use null.", 
                 d
             )
         )?;
