@@ -15,6 +15,15 @@ impl Role {
         }
         .to_string()
     }
+
+    pub fn from_name(name: String) -> Option<Self> {
+        match name.as_str() {
+            "system" => Some(Self::System),
+            "user" => Some(Self::User),
+            "assistant" => Some(Self::Assistant),
+            _ => None,
+        }
+    }
 }
 
 impl serde::Serialize for Role {

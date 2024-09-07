@@ -2,10 +2,10 @@ use std::{collections::HashMap, env, sync::LazyLock};
 
 use anyhow::Error;
 use colored::Colorize;
+use dotenv::dotenv;
 use pyo3::{exceptions::PyRuntimeError, prelude::*, types::PyDict};
 use serde_json::Value;
 use tokio::runtime::{self, Runtime};
-use dotenv::dotenv;
 
 static RUNTIME: LazyLock<Runtime> = LazyLock::new(|| {
     runtime::Builder::new_current_thread()
@@ -16,13 +16,14 @@ static RUNTIME: LazyLock<Runtime> = LazyLock::new(|| {
 
 use crate::{
     provider_base::{Message, Provider, Role},
-    provider_groq::Groq, utils,
+    provider_groq::Groq,
+    utils,
 };
 
 #[pyclass]
 pub struct RustAism {
     provider: Groq,
-    debug: bool
+    debug: bool,
 }
 
 #[pymethods]
@@ -33,12 +34,9 @@ impl RustAism {
         dotenv().ok();
         RustAism {
             provider: Groq::new(
-                api_key
-                    .unwrap_or(
-                        env::var("GROQ_API_KEY").unwrap_or("".to_string())
-                    )
+                api_key.unwrap_or(env::var("GROQ_API_KEY").unwrap_or("".to_string())),
             ),
-            debug
+            debug,
         }
     }
 
@@ -59,12 +57,16 @@ pub struct RustInstance {
     #[pyo3(get)]
     values: Vec<String>,
     provider: Groq,
-    debug: bool
+    debug: bool,
 }
 
 impl RustInstance {
     pub fn new(values: Vec<String>, provider: Groq, debug: bool) -> Self {
-        RustInstance { values, provider, debug }
+        RustInstance {
+            values,
+            provider,
+            debug,
+        }
     }
 }
 
@@ -74,6 +76,7 @@ impl RustInstance {
         self.values.push(value);
         self.to_owned()
     }
+
     fn instruct(&self, py: Python, q: String) -> PyResult<String> {
         let f = async move {
             if self.debug {
@@ -142,8 +145,8 @@ impl RustInstance {
 
     fn is_sensitive(&self, py: Python) -> PyResult<bool> {
         let res = self.instruct(
-            py, 
-            "Is it sensitive? Perform a profanity check and write the reasons. At the end of the line, write Yes or No"
+            py,
+            "Is it sensitive? Perform a profanity check and write the reasons. Write your reasons, and at the end of the line, write 'therefore,' Yes or No"
                 .to_string()
         )?;
         Ok(res.trim().to_lowercase().ends_with("yes"))
@@ -151,27 +154,35 @@ impl RustInstance {
 
     fn mentioned(&self, py: Python, keyword: String) -> PyResult<bool> {
         let res = self.instruct(
-            py, 
+            py,
             format!("Is the information {:?} mentioned in the above text? Write your reasons, and at the end of the line, write 'therefore,' Yes or No.", keyword)
         )?;
 
-        Ok(res.trim().to_lowercase().trim_end_matches(".").ends_with("yes"))
+        Ok(res
+            .trim()
+            .to_lowercase()
+            .trim_end_matches(".")
+            .ends_with("yes"))
     }
 
     fn matches(&self, py: Python, keyword: String) -> PyResult<bool> {
         let res = self.instruct(
-            py, 
+            py,
             format!("Does the information {:?} match the above text? Write your reasons, and at the end of the line, write 'therefore,' Yes or No.", keyword)
         )?;
 
-        Ok(res.trim().to_lowercase().trim_end_matches(".").ends_with("yes"))
+        Ok(res
+            .trim()
+            .to_lowercase()
+            .trim_end_matches(".")
+            .ends_with("yes"))
     }
 
-    fn fill_dict(&self, py: Python, d: HashMap<String, String>) -> PyResult<PyObject> {
+    fn fill_dict(&self, py: Python, d: String) -> PyResult<PyObject> {
         let res = self.instruct(
             py,
             format!(
-                "Given the below dictionary, you MUST fill it with the above data: {:?}\nYOU MUST provide valid JSON, NOT RUST CODE. If unknown, use null.", 
+                "Given the below dictionary, you MUST fill it with the above data: {:?}\nYOU MUST provide valid JSON, NOT PYTHON CODE. If unknown, use null.", 
                 d
             )
         )?;
@@ -179,7 +190,31 @@ impl RustInstance {
         if let Ok(r) = filled {
             Ok(utils::to_py(py, r)?.unwrap_or(PyDict::new_bound(py).into()))
         } else {
-            Err(PyRuntimeError::new_err(format!("failed to fill dictionary, original text:\n{}", res)))
+            Err(PyRuntimeError::new_err(format!(
+                "failed to fill dictionary, original text:\n{}",
+                res
+            )))
+        }
+    }
+
+    fn _conv(&self, py: Python, msgs: Vec<HashMap<String, String>>) -> PyResult<String> {
+        let messages = msgs
+            .iter()
+            .map(|m| Message {
+                role: Role::from_name(m.get("role").unwrap().to_string()).unwrap(),
+                content: m.to_owned().get("content").unwrap().to_string(),
+            })
+            .collect::<Vec<Message>>();
+
+        let f = async move {
+            let res = self.provider.inquire(messages).await?;
+            Ok(res)
+        };
+        let binding: Result<Message, Error> = py.allow_threads(|| RUNTIME.block_on(f));
+
+        match binding {
+            Ok(m) => Ok(m.content),
+            Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(format!("{}", e))),
         }
     }
 }
