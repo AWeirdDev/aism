@@ -45,6 +45,8 @@ jobs:
         run: sudo apt-get install libssl-dev
       - name: Install pkg-config
         run: sudo apt-get install pkg-config
+      - name: Set OpenSSL directory
+        run: echo "OPENSSL_DIR=$(openssl version -d | cut -d'\"' -f2)" >> $GITHUB_ENV
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -80,6 +82,8 @@ jobs:
         run: sudo apt-get install libssl-dev
       - name: Install pkg-config
         run: sudo apt-get install pkg-config
+      - name: Set OpenSSL directory
+        run: echo "OPENSSL_DIR=$(openssl version -d | cut -d'\"' -f2)" >> $GITHUB_ENV
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
