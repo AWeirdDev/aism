@@ -16,7 +16,7 @@ Aism provides a clean interface for summarizing, translating, conditional checks
 
 <sub><sup>1</sup> Striked-through features are currently in development and will be shipped within the next few months.</sub>
 
-## 3 steps
+## 🧑‍💻 3 steps
 
 Aism is as simple as these 3 steps:
 
@@ -44,9 +44,10 @@ class News:
   tags: list[str]
 
 news = """\
-A man in Springfield has reportedly trained his pet goldfish to understand basic calculus principles. While skeptics abound, the fish has allegedly aced every test.
+A man in Springfield has reportedly trained his pet goldfish to understand basic calculus principles…
 """
 
+# Give the data to the AI and fill it with the dataclass
 print(ai.give(news).fill(News))
 ```
 
@@ -55,13 +56,19 @@ We get a nice result like this:
 > 🐣 **Aism** <kbd>runtime</kbd>
 > 
 > ```python
-> News(title='A man in Springfield has reportedly trained his pet goldfish to understand basic calculus principles', summarization='While skeptics abound, the fish has allegedly aced every test', tags=['goldfish', 'calculus', 'Springfield'])
+> News(
+>   title='A man in Springfield has reportedly trained his…', 
+>   summarization='While skeptics abound, the fish has allegedly…', 
+>   tags=['goldfish', 'calculus', 'Springfield']
+> )
 > ```
 
 Awesome! Your data is **even more structured** and easier to understand through the typing system.
 
 But wait, there's MORE to Aism?! Learn all about Aism in the `learn/` directory.
 
+
+## 📚 Resources
 - [Learn](./learn/README.md)
 - [Documentation](./learn/docs)
 - [Cookbooks](./learn/cookbooks)
