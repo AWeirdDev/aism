@@ -4,17 +4,26 @@ build-backend = "maturin"
 
 [project]
 name = "aism"
-requires-python = ">=3.8"
+description = "AI for the runtime."
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
-[project.optional-dependencies]
-tests = [
-    "pytest",
+keywords = ["aism", "ai", "groq", "translate", "dataclass", "autofill", "runtime", "llm"]
+readme = "README.md"
+license = { file = "LICENSE" }
+dependencies = [
+    "typing-extensions"
 ]
+
+[project.urls]
+"Source" = "https://github.com/AWeirdDev/aism"
+"Issues" = "https://github.com/AWeirdDev/aism"
+
+
 [tool.maturin]
 python-source = "python"
 features = ["pyo3/extension-module"]
