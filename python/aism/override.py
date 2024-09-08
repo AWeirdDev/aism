@@ -1,6 +1,7 @@
 from dataclasses import is_dataclass
 from typing import (
     Any,
+    Callable,
     Dict,
     List,
     LiteralString,
@@ -11,6 +12,7 @@ from typing import (
 )
 
 from .aism import RustAism, RustInstance
+from .function import Function, FunctionAI, FunctionReturnType
 from .utils import (
     Dataclass,
     DescriptiveDict,
@@ -23,7 +25,13 @@ from .utils import (
 class Aism:
     """🗻 The Aism AI framework.
 
-    Args:F
+    Example:
+    .. code-block:: python
+
+        ai = Aism()
+        ai.give(data).translate("german")
+
+    Args:
         api_key (str, optional): Your Groq API key. Defaults to ``None`` if using the environment variable
             ``GROQ_API_KEY``.
         debug (bool, optional): Whether to print debug messages. Defaults to ``False``.
@@ -59,6 +67,16 @@ class Aism:
             rows (List[str]): The rows of data to provide.
         """
         return Instance(self.ra.feed(rows))  # type: ignore
+
+    def function_ai(
+        self, functions: List[Union[Function, Callable[..., FunctionReturnType]]]
+    ) -> FunctionAI:
+        """Creates a new function-based AI.
+
+        Args:
+            functions: The functions to add.
+        """
+        return FunctionAI(self.ra, functions)
 
     def __repr__(self) -> str:
         return "Aism::<RustAism>()"

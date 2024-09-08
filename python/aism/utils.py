@@ -5,6 +5,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Literal,
     Protocol,
     Tuple,
     Type,
@@ -103,3 +104,24 @@ def dict_to_schema(d: Dict[str, Any], dc: DT) -> DT:
         results[k] = v
 
     return dc(**results)  # type: ignore
+
+
+def messaged(
+    role: Literal["system", "user", "assistant"], content: str
+) -> Dict[str, str]:
+    """Creates a message dictionary.
+
+    Example:
+    .. code-block:: python
+
+        message("user", "Hello, how are you?")
+        message("assistant", "As an AI language model, ...")
+
+    Args:
+        role ("system" | "user" | "assistant"): The role of the message.
+        content (str): The content of the message.
+
+    Returns:
+        Dict[str, str]: The message dictionary.
+    """
+    return {"role": role, "content": content}
