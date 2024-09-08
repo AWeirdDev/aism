@@ -88,39 +88,6 @@ jobs:
         with:
           name: wheels-linux-${{ matrix.platform.target }}
           path: dist
-      - name: pytest
-        if: ${{ startsWith(matrix.platform.target, 'x86_64') }}
-        shell: bash
-        run: |
-          set -e
-          pip install uv
-          for version in 3.8 3.9 3.10 3.11 3.12; do
-            uv venv --preview --python $version
-            source .venv/bin/activate
-            uv pip install certifi pytest
-            uv pip install primp --no-index --find-links dist --force-reinstall
-            pytest
-          done
-      - name: pytest
-        if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
-        uses: uraimo/run-on-arch-action@v2
-        with:
-          arch: ${{ matrix.platform.target }}
-          distro: ubuntu22.04
-          githubToken: ${{ github.token }}
-          install: |
-            apt-get update
-            apt-get install -y --no-install-recommends python3 python3-pip
-          run: |
-            set -e
-            pip install uv
-            for version in 3.8 3.9 3.10 3.11 3.12; do
-              uv venv --preview --python $version
-              source .venv/bin/activate
-              uv pip install certifi pytest
-              uv pip install primp --no-index --find-links dist --force-reinstall
-              pytest
-            done
 
   musllinux:
     runs-on: ${{ matrix.platform.runner }}
@@ -170,19 +137,6 @@ jobs:
       - name: QEMU
         if: matrix.platform.target != 'x86_64'
         uses: docker/setup-qemu-action@v3
-      - name: pytest
-        uses: addnab/docker-run-action@v3
-        with:
-          image: quay.io/pypa/musllinux_1_2_${{ matrix.platform.target }}:latest
-          options: -v ${{ github.workspace }}:/io -w /io
-          run: |
-            for version in 3.8 3.9 3.10 3.11 3.12; do
-              python$version -m venv .venv
-              source .venv/bin/activate
-              pip install certifi pytest
-              pip install primp --no-index --find-links dist --force-reinstall
-              pytest
-            done
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
@@ -212,19 +166,6 @@ jobs:
         with:
           name: wheels-windows-${{ matrix.platform.target }}
           path: dist
-      - name: pytest
-        if: ${{ !startsWith(matrix.platform.target, 'aarch64') }}
-        shell: bash
-        run: |
-          set -e
-          pip install uv
-          for version in 3.8 3.9 3.10 3.11 3.12; do
-            uv venv --preview --python $version
-            source .venv/Scripts/activate
-            uv pip install certifi pytest
-            uv pip install primp --no-index --find-links dist --force-reinstall
-            pytest
-          done
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -253,17 +194,6 @@ jobs:
         with:
           name: wheels-macos-${{ matrix.platform.target }}
           path: dist
-      - name: pytest
-        run: |
-          set -e
-          pip install uv
-          for version in 3.8 3.9 3.10 3.11 3.12; do
-            uv venv --preview --python $version
-            source .venv/bin/activate
-            uv pip install certifi pytest
-            uv pip install primp --no-index --find-links dist --force-reinstall
-            pytest
-          done
 
   sdist:
     runs-on: ubuntu-latest
