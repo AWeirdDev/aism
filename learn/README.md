@@ -12,12 +12,12 @@
 Documentation for Aism.
 
 **APIs and examples**:
-- [Fill](fill.md)
-- [Utilities](utilities.md)
+- [Fill](./docs/fill.md)
+- [Utilities](./docs/utilities.md)
 
 # 🥐 Cookbooks
 Be your own chef.
-- [Basic cookbook](../cookbooks/basics.ipynb)
+- [Basic cookbook](./cookbooks/basics.ipynb)
 
 # 🙋 FAQs
 
