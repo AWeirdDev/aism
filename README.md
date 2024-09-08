@@ -16,7 +16,12 @@ Aism provides a clean interface for summarizing, translating, conditional checks
 
 <sub><sup>1</sup> Striked-through features are currently in development and will be shipped within the next few months.</sub>
 
-## 🧑‍💻 3 steps
+<h2>🧑‍🚀 3 Steps</h2>
+
+<details>
+<summary>Expand...</summary>
+
+***
 
 Aism is as simple as these 3 steps:
 
@@ -67,11 +72,14 @@ Awesome! Your data is **even more structured** and easier to understand through 
 
 But wait, there's MORE to Aism?! Learn all about Aism in the `learn/` directory.
 
+</details>
+
 
 ## 📚 Resources
-- [Learn](./learn/README.md)
-- [Documentation](./learn/docs)
-- [Cookbooks](./learn/cookbooks)
+
+- 🧠 [Learn](./learn/README.md) – The central of everything, perhaps.
+- 📖 [Documentation](./learn/docs) – Refer to the API documentation and examples.
+- 🥐 [Cookbooks](./learn/cookbooks) - Realistic use cases with notebooks.
 
 ***
 
