@@ -79,6 +79,7 @@ jobs:
           CXX: ${{ matrix.platform.target == 'aarch64' && 'aarch64-linux-gnu-g++' || '' }}                                                                                                                     
           # CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER: x86_64-linux-gnu-g++                                                                                                                                      
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: ${{ matrix.platform.target == 'aarch64' && 'aarch64-linux-gnu-g++' || '' }}
+          OPENSSL_DIR: /usr/include/openssl
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
@@ -157,6 +158,7 @@ jobs:
           CXX: ${{ matrix.platform.target }}-linux-musl-g++
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER: x86_64-linux-musl-g++
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER: aarch64-linux-musl-g++
+          OPENSSL_DIR: /usr/include/openssl
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
