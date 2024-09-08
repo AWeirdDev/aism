@@ -2,7 +2,7 @@
 
 ![banner](weird_banner.png)
 
-Aism is an AI framework powered by [Groq](https://groq.com).
+[GitHub](https://github.com/AWeirdDev/aism) ● [Workflows](https://github.com/AWeirdDev/aism/actions) ● [Issues](https://github.com/AWeirdDev/aism/issues)
 
 `$ pip install aism`
 
