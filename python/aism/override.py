@@ -240,3 +240,6 @@ class Instance:
             raise TypeError(f"Unrecognized type for instance.fill: {type(o)}")
 
         return res
+
+    def __repr__(self) -> str:
+        return f"Instance::<RustInstance>(ri={self.ri!r})"
