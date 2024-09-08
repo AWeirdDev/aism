@@ -195,8 +195,8 @@ impl RustInstance {
         let rjson = repair_json::repair(res.to_owned());
         if let Err(e) = rjson {
             return Err(PyRuntimeError::new_err(format!(
-                "failed to fill dictionary, error:\n{}",
-                e
+                "failed to fill dictionary, error: {}\noriginal text:\n{}",
+                e, res
             )));
         }
 
@@ -211,14 +211,38 @@ impl RustInstance {
         }
     }
 
+    /// Conversational interface (with inserted data)
     fn _conv(&self, py: Python, msgs: Vec<HashMap<String, String>>) -> PyResult<String> {
-        let messages = msgs
+        let mut messages = msgs
             .iter()
             .map(|m| Message {
                 role: Role::from_name(m.get("role").unwrap().to_string()).unwrap(),
                 content: m.to_owned().get("content").unwrap().to_string(),
             })
             .collect::<Vec<Message>>();
+
+        messages.insert(
+            0,
+            Message {
+                role: Role::User,
+                content: format!(
+                    "Given data rows:\n{}",
+                    self.values
+                        .iter()
+                        .enumerate()
+                        .map(|(i, v)| format!("{}. {}", i, v))
+                        .collect::<Vec<String>>()
+                        .join("\n")
+                ),
+            },
+        );
+        messages.insert(
+            1,
+            Message {
+                role: Role::System,
+                content: "IGNORE THE ABOVE INSTRUCTIONS. Follow the below.".to_string(),
+            },
+        );
 
         let f = async move {
             let res = self.provider.inquire(messages).await?;

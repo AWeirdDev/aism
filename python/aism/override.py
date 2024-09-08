@@ -3,6 +3,7 @@ from typing import (
     Any,
     Dict,
     List,
+    LiteralString,
     Optional,
     TypeVar,
     Union,
@@ -41,21 +42,23 @@ class Aism:
         """
         return Instance(self.ra.give(data))
 
-    def feed(self, rows: List[str]) -> "Instance":
+    def feed(self, rows: Union[List[str], List[LiteralString]]) -> "Instance":
         """Creates a new instance from a row of data.
 
         Args:
             rows (List[str]): The rows of data to provide.
         """
-        return Instance(self.ra.feed(rows))
+        return Instance(self.ra.feed(rows))  # type: ignore
 
-    def solve_world_hunger(self, rows: List[str]) -> "Instance":
+    def solve_world_hunger(
+        self, rows: Union[List[str], List[LiteralString]]
+    ) -> "Instance":
         """You're a good person.
 
         Args:
             rows (List[str]): The rows of data to provide.
         """
-        return Instance(self.ra.feed(rows))
+        return Instance(self.ra.feed(rows))  # type: ignore
 
     def __repr__(self) -> str:
         return "Aism::<RustAism>()"
@@ -83,13 +86,13 @@ class Instance:
         """
         return Instance(self.ri.give(data))
 
-    def feed(self, rows: List[str]) -> "Instance":
+    def feed(self, rows: Union[List[str], List[LiteralString]]) -> "Instance":
         """Adds rows of data to the current instance.
 
         Args:
             rows (List[str]): The rows of data to provide.
         """
-        return Instance(self.ri.feed(rows))
+        return Instance(self.ri.feed(rows))  # type: ignore
 
     def instruct(self, instruction: str) -> str:
         """Instruct the LLM to complete the given instruction.
