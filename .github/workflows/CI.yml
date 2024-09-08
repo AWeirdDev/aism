@@ -67,12 +67,15 @@ jobs:
       - name: Get openssl dir
         id: openssl
         run: echo "OPENSSL_DIR=$(pkg-config --variable=prefix openssl)" >> $GITHUB_OUTPUT
+      - name: Get Python interpreter
+        id: python
+        run: echo "PYTHON=$(python -c "import sys; print(sys.executable)")" >> $GITHUB_OUTPUT
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           rust-toolchain: stable
           target: ${{ matrix.platform.target }}
-          args: ${{ matrix.platform.target == 'x86_64' && '--release --out dist --zig' || '--release --out dist' }}
+          args: ${{ matrix.platform.target == 'x86_64' && '--release --out dist --zig' || '--release --out dist' }} -i ${{ steps.python.outputs.PYTHON }}
           sccache: 'true'
           manylinux: auto
           container: 'off'
@@ -114,11 +117,17 @@ jobs:
           echo "/opt/${{ matrix.platform.target }}-linux-musl-cross/bin/" >> $GITHUB_PATH
       - name: Install libssl
         run: sudo apt-get install pkg-config libssl-dev
+      - name: Get openssl dir
+        id: openssl
+        run: echo "OPENSSL_DIR=$(pkg-config --variable=prefix openssl)" >> $GITHUB_OUTPUT
+      - name: Get Python interpreter
+        id: python
+        run: echo "PYTHON=$(python -c "import sys; print(sys.executable)")" >> $GITHUB_OUTPUT
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           rust-toolchain: stable
-          target: ${{ matrix.platform.target }}
+          target: ${{ matrix.platform.target }} -i ${{ steps.python.outputs.PYTHON }}
           args: --release --out dist
           sccache: 'true'
           manylinux: musllinux_1_2
@@ -128,7 +137,7 @@ jobs:
           CXX: ${{ matrix.platform.target }}-linux-musl-g++
           CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER: x86_64-linux-musl-g++
           CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER: aarch64-linux-musl-g++
-          OPENSSL_DIR: /usr/include/openssl
+          OPENSSL_DIR: ${{ steps.openssl.outputs.OPENSSL_DIR }}
       - name: Upload wheels
         uses: actions/upload-artifact@v4
         with:
