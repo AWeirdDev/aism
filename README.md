@@ -60,4 +60,12 @@ We get a nice result like this:
 
 Awesome! Your data is **even more structured** and easier to understand through the typing system.
 
-But wait, there's MORE to Aism?!
+But wait, there's MORE to Aism?! Learn all about Aism in the `learn/` directory.
+
+- [Learn](./learn/README.md)
+- [Documentation](./learn/docs)
+- [Cookbooks](./learn/cookbooks)
+
+***
+
+(c) 2024 AWeirdDev
